@@ -1,10 +1,11 @@
 import os
+import asyncio
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
-# سيرفر وهمي لإبقاء الخطي المجانية على Render نشطة
+# 1. سيرفر وهمي لإبقاء Render نشطاً
 class HealthCheckHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -16,26 +17,54 @@ def run_health_check_server():
     server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
     server.serve_forever()
 
-# كود البوت الأساسي
+# 2. التوكن وحساب التواصل
 TOKEN = "8847445337:AAFayzATCl8C-4sexybj_wHD90rnkVHTxIs"
+MY_TELEGRAM_USERNAME = "Mahmoud17312"  # ضع اسم مستخدم حسابك هنا بدون @
 
+# 3. أمر /start لإظهار الأزرار
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("أهلاً بك! البوت يعمل بنجاح 🚀")
+    keyboard = [
+        [
+            InlineKeyboardButton("🛠️ خدمة التصميم", callback_data="service_design"),
+            InlineKeyboardButton("💻 خدمة البرمجة", callback_data="service_coding"),
+        ],
+        [
+            InlineKeyboardButton("📩 للتواصل المباشر", url=f"https://t.me/{MY_TELEGRAM_USERNAME}")
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await update.message.reply_text(
+        "أهلاً بك في بوت الخدمات! 🚀\nاختر الخدمة التي تريدها أو اضغط على التواصل المباشر:",
+        reply_markup=reply_markup
+    )
 
-def main():
-    if not TOKEN:
-        print("Error: BOT_TOKEN is missing!")
-        return
+# 4. معالجة الضغط على أزرار الخدمات
+async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
 
-    # تشغيل سيرفر الويب في المسار الخلفي
+    if query.data == "service_design":
+        await query.message.reply_text("🎨 **خدمة التصميم:** نتشرف بتقديم أفضل التصاميم الاحترافية لعلامتك التجارية.")
+    elif query.data == "service_coding":
+        await query.message.reply_text("💻 **خدمة البرمجة:** نقوم بتطوير البوتات والمواقع بأعلى جودة.")
+
+# 5. تشغيل التطبيق
+async def main():
     threading.Thread(target=run_health_check_server, daemon=True).start()
 
-    # تشغيل البوت
     app = Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
     
-    print("Bot is running...")
-    app.run_polling()
+    # إضافة الأوامر والمُعالجات
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button_click))
+
+    print("Bot is running with buttons...")
+    
+    async with app:
+        await app.start()
+        await app.updater.start_polling()
+        await asyncio.Event().wait()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
