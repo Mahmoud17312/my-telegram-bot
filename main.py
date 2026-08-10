@@ -20,7 +20,7 @@ def run_health_check_server():
 # 2. التوكن والروابط (ضع اليوزر الخاص بك والقناة بدون @)
 TOKEN = "8847445337:AAFayzATCl8C-4sexybj_wHD90rnkVHTxIs"
 MY_TELEGRAM_USERNAME = "@CyberMsec"  # يوزر حسابك الشخصي
-MY_CHANNEL_USERNAME = "t.me/CYPERMRED"  # يوزر قناتك هنا بدون @
+MY_CHANNEL_USERNAME = "CYPERMRED"  # يوزر قناتك هنا بدون @
 
 # 3. أمر /start لإظهار الأزرار
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
