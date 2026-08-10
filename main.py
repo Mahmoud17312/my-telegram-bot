@@ -19,7 +19,7 @@ def run_health_check_server():
 
 # 2. التوكن وحساب التواصل
 TOKEN = "8847445337:AAFayzATCl8C-4sexybj_wHD90rnkVHTxIs"
-MY_TELEGRAM_USERNAME = "Mahmoud17312"  # ضع اسم مستخدم حسابك هنا بدون @
+MY_TELEGRAM_USERNAME = "@CyberMsec"  # ضع اسم مستخدم حسابك هنا بدون @
 
 # 3. أمر /start لإظهار الأزرار
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
