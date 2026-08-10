@@ -17,9 +17,10 @@ def run_health_check_server():
     server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
     server.serve_forever()
 
-# 2. التوكن وحساب التواصل
+# 2. التوكن والروابط (ضع اليوزر الخاص بك والقناة بدون @)
 TOKEN = "8847445337:AAFayzATCl8C-4sexybj_wHD90rnkVHTxIs"
-MY_TELEGRAM_USERNAME = "@CyberMsec"  # ضع اسم مستخدم حسابك هنا بدون @
+MY_TELEGRAM_USERNAME = "@CyberMsec"  # يوزر حسابك الشخصي
+MY_CHANNEL_USERNAME = "t.me/CYPERMRED"  # يوزر قناتك هنا بدون @
 
 # 3. أمر /start لإظهار الأزرار
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -29,13 +30,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             InlineKeyboardButton("💻 خدمة البرمجة", callback_data="service_coding"),
         ],
         [
-            InlineKeyboardButton("📩 للتواصل المباشر", url=f"https://t.me/{MY_TELEGRAM_USERNAME}")
+            InlineKeyboardButton("📢 قناتنا على تليجرام", url=f"t.me/{MY_CHANNEL_USERNAME}")
+        ],
+        [
+            InlineKeyboardButton("📩 للتواصل المباشر", url=f"t.me/{MY_TELEGRAM_USERNAME}")
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
     await update.message.reply_text(
-        "أهلاً بك في بوت الخدمات! 🚀\nاختر الخدمة التي تريدها أو اضغط على التواصل المباشر:",
+        "أهلاً بك في بوت الخدمات! 🚀\nاختر الخدمة التي تريدها أو تصفح قناتنا وللتواصل المباشر:",
         reply_markup=reply_markup
     )
 
