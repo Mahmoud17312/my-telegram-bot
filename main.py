@@ -17,7 +17,7 @@ def run_health_check_server():
     server.serve_forever()
 
 # كود البوت الأساسي
-TOKEN = os.environ.get("8847445337:AAFayzATCl8C-4sexybj_wHD90rnkVHTxIs")
+TOKEN = "8847445337:AAFayzATCl8C-4sexybj_wHD90rnkVHTxIs"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("أهلاً بك! البوت يعمل بنجاح 🚀")
