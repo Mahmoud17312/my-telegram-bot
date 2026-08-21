@@ -1,74 +1,34 @@
-import os
 import asyncio
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
+import logging
 
-# 1. سيرفر وهمي لإبقاء Render نشطاً
-class HealthCheckHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"OK")
+from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
+from aiogram.fsm.storage.memory import MemoryStorage
 
-def run_health_check_server():
-    port = int(os.environ.get("PORT", 8080))
-    server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
-    server.serve_forever()
+from bot.config import settings
+from bot.database import init_db
+from bot.handlers import get_root_router
 
-# 2. التوكن والروابط (ضع اليوزر الخاص بك والقناة بدون @)
-TOKEN = "8847445337:AAFayzATCl8C-4sexybj_wHD90rnkVHTxIs"
-MY_TELEGRAM_USERNAME = "CyberMsec"  # يوزر حسابك الشخصي
-MY_CHANNEL_USERNAME = "CYPERMRED"  # يوزر قناتك هنا بدون @
 
-# 3. أمر /start لإظهار الأزرار
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [
-            InlineKeyboardButton("🛠️ خدمة التصميم", callback_data="service_design"),
-            InlineKeyboardButton("💻 خدمة البرمجة", callback_data="service_coding"),
-        ],
-        [
-            InlineKeyboardButton("📢 قناتنا على تليجرام", url=f"t.me/{MY_CHANNEL_USERNAME}")
-        ],
-        [
-            InlineKeyboardButton("📩 للتواصل المباشر", url=f"t.me/{MY_TELEGRAM_USERNAME}")
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    await update.message.reply_text(
-        "أهلاً بك في بوت الخدمات! 🚀\nاختر الخدمة التي تريدها أو تصفح قناتنا وللتواصل المباشر:",
-        reply_markup=reply_markup
-    )
+logging.basicConfig(level=logging.INFO)
 
-# 4. معالجة الضغط على أزرار الخدمات
-async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
 
-    if query.data == "service_design":
-        await query.message.reply_text("🎨 **خدمة التصميم:** نتشرف بتقديم أفضل التصاميم الاحترافية لعلامتك التجارية.")
-    elif query.data == "service_coding":
-        await query.message.reply_text("💻 **خدمة البرمجة:** نقوم بتطوير البوتات والمواقع بأعلى جودة.")
-
-# 5. تشغيل التطبيق
 async def main():
-    threading.Thread(target=run_health_check_server, daemon=True).start()
+    if settings.bot_token == "8367891612:AAHMpr1y5SKH-W2OYbteVl_yY2D31t26VUw":
+        raise RuntimeError(
+            "لازم تحط توكن البوت الحقيقي بملف .env تحت اسم BOT_TOKEN قبل التشغيل."
+        )
 
-    app = Application.builder().token(TOKEN).build()
-    
-    # إضافة الأوامر والمُعالجات
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(button_click))
+    await init_db()
 
-    print("Bot is running with buttons...")
-    
-    async with app:
-        await app.start()
-        await app.updater.start_polling()
-        await asyncio.Event().wait()
+    bot = Bot(token=settings.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    dp = Dispatcher(storage=MemoryStorage())
+    dp.include_router(get_root_router())
+
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
