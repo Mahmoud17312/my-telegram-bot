@@ -1,6 +1,5 @@
 """
-سكربت لتعبئة قاعدة البيانات بفئة ومنتجات Gemini فقط.
-شغّله بالأمر: python -m bot.seed
+سكربت لتعبئة قاعدة البيانات بفئة Gemini فقط بشعار النجمة الرباعية.
 """
 import asyncio
 import aiosqlite
@@ -11,18 +10,17 @@ from bot.database import init_db
 async def seed():
     await init_db()
     async with aiosqlite.connect(settings.db_path) as db:
-        # مسح البيانات السابقة لتجنب التكرار
+        # مسح التصنيفات والمنتجات القديمة
         await db.execute("DELETE FROM products")
         await db.execute("DELETE FROM categories")
 
-        # إضافة فئة Gemini فقط (مع إيموجي Gemini المميز ✨)
+        # استخدام الرمز الرباعي ✦ المطابق لشكل الشعار
         cur = await db.execute(
             "INSERT INTO categories (name, emoji) VALUES (?, ?)",
-            ("Gemini", "✨"),
+            ("Gemini", "✦"),
         )
         cat_gemini = cur.lastrowid
 
-        # منتجات Gemini
         products = [
             (
                 cat_gemini,
@@ -43,7 +41,7 @@ async def seed():
                 p,
             )
         await db.commit()
-    print("تم تحديث البيانات وإبقاء Gemini فقط بنجاح ✅")
+    print("تم تحديث البيانات وإضافة Gemini بنجاح ✦")
 
 
 if __name__ == "__main__":
