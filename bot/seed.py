@@ -26,7 +26,7 @@ async def seed():
                 cat_gemini,
                 "اشتراك Gemini Advanced (شهر)",
                 "وصول لنموذج Ultra مع مساحة 2TB على Google One.",
-                19.0,
+                1.0,
                 8,
                 "text",
                 "الإيميل: gemini_user1@example.com | كلمة السر: Pass123456",
